@@ -8,6 +8,7 @@ import 'package:notes_app/firebase_options.dart';
 import 'package:notes_app/views/login_view.dart';
 // ignore: unused_import
 import 'package:notes_app/views/register_view.dart';
+import 'package:notes_app/views/verify_email_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,21 +39,23 @@ class HomePage extends StatelessWidget {
           case ConnectionState.waiting:
             return const Center(child: CircularProgressIndicator());
           case ConnectionState.done:
-            // final user = FirebaseAuth.instance.currentUser;
-            // print(user);
-            // final emailVerified = user?.emailVerified ?? false;
-            // if (emailVerified) {
-            //   return const Text("Feito");
-            // } else {
-            //   return const VerifyEmailView();
-            // }
-            return const LoginView();
+            final user = FirebaseAuth.instance.currentUser;
+            if (user != null) {
+              if (user.emailVerified) {
+                print("Email verificado");
+              } else {
+                return const VerifyEmailView();
+              }
+            } else {
+              return const LoginView();
+            }
           case ConnectionState.none:
             return const Center(child: Text("Firebase não inicializado"));
           default:
             return const Center(child: Text("Erro ao inicializar o Firebase"));
         }
         // Default return statement to handle all cases
+        return const Text('Feito.');
       },
     );
   }
