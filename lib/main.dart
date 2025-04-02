@@ -4,11 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/firebase_options.dart';
-// ignore: unused_import
 import 'package:notes_app/views/login_view.dart';
-// ignore: unused_import
+import 'package:notes_app/views/notes_view.dart';
 import 'package:notes_app/views/register_view.dart';
 import 'package:notes_app/views/verify_email_view.dart';
+import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +42,7 @@ class HomePage extends StatelessWidget {
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
               if (user.emailVerified) {
-                print("Email verificado");
+                return const NotesView();
               } else {
                 return const VerifyEmailView();
               }
@@ -55,8 +55,33 @@ class HomePage extends StatelessWidget {
             return const Center(child: Text("Erro ao inicializar o Firebase"));
         }
         // Default return statement to handle all cases
-        return const Text('Feito.');
       },
     );
   }
+}
+
+Future<bool> showLogOutDialog(BuildContext context) {
+  return showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Sair"),
+        content: const Text("Você realmente deseja sair?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: const Text("Cancelar"),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop(true);
+            },
+            child: const Text("Sair"),
+          ),
+        ],
+      );
+    },
+  ).then((value) => value ?? false); // Handle null case
 }
