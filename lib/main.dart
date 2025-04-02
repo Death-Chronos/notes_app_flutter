@@ -20,6 +20,8 @@ void main() {
       routes: {
         '/login/': (context) => const LoginView(),
         '/register/': (context) => const RegisterView(),
+        // '/verify-email/': (context) => const VerifyEmailView(),
+        '/notes/': (context) => const NotesView(),
       },
     ),
   );
@@ -85,3 +87,4 @@ Future<bool> showLogOutDialog(BuildContext context) {
     },
   ).then((value) => value ?? false); // Handle null case
 }
+

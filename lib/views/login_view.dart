@@ -63,8 +63,12 @@ class _LoginViewState extends State<LoginView> {
               final password = _password.text;
               try {
                 final userCredential = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(email: email, password: password);
-                devtools.log(userCredential.toString());
+                    .signInWithEmailAndPassword(
+                      email: email, 
+                      password: password);
+                Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil('/notes/', (route) => false);
               } on FirebaseAuthException catch (e) {
                 devtools.log("Erro ao logar");
                 if (e.code == 'invalid-credential') {
