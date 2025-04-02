@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:notes_app/constant/routes.dart';
 import 'package:notes_app/enums/menu_action.dart';
 import 'package:notes_app/main.dart';
 
@@ -24,12 +25,13 @@ class _NotesViewState extends State<NotesView> {
               switch (value) {
                 case MenuAction.logout:
                   final shouldLogOut = await showLogOutDialog(context);
-                  if (shouldLogOut){
+                  if (shouldLogOut) {
                     await FirebaseAuth.instance.signOut();
-                    Navigator.of(
-                    context,
-                  ).pushNamedAndRemoveUntil('/login/', (route) => false);
-                  
+                    Navigator.of(context)
+                      .pushNamedAndRemoveUntil(
+                        loginRoute, 
+                        (route) => false
+                      );
                   }
                   break;
               }
@@ -49,4 +51,3 @@ class _NotesViewState extends State<NotesView> {
     );
   }
 }
-
