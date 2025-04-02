@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:notes_app/constant/routes.dart';
+import 'package:notes_app/main.dart';
+import 'package:notes_app/utilities/show_dialogs.dart';
 
 
 class RegisterView extends StatefulWidget {
@@ -71,14 +73,16 @@ class _RegisterViewState extends State<RegisterView> {
                 );
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'weak-password') {
-                  devtools.log("Senha fraca");
+                  await showErrorDialog(context, 'A senha que informou é fraca');
                 } else if (e.code == 'email-already-in-use') {
-                  devtools.log("Email já está em uso");
+                  await showErrorDialog(context, 'O email que informou já está em uso');
                 } else if (e.code == 'invalid-email') {
-                  devtools.log("Email inválido");
+                  await showErrorDialog(context, 'Email inválido');
                 } else {
-                  devtools.log("Erro desconhecido: ${e.code}");
+                  await showErrorDialog(context, 'Ocorreu um erro ao registrar: ${e.code}');
                 }
+              } catch (e) {
+                await showErrorDialog(context, 'Ocorreu um erro inesperado: $e');
               }
             },
             child: const Text("Registrar"),

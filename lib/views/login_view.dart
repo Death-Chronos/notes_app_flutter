@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:notes_app/constant/routes.dart';
-
+import 'package:notes_app/main.dart';
+import 'package:notes_app/utilities/show_dialogs.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -33,10 +34,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login"),
-        backgroundColor: Colors.blue,
-      ),
+      appBar: AppBar(title: const Text("Login"), backgroundColor: Colors.blue),
       body: Column(
         children: [
           TextField(
@@ -66,16 +64,19 @@ class _LoginViewState extends State<LoginView> {
               try {
                 final userCredential = await FirebaseAuth.instance
                     .signInWithEmailAndPassword(
-                      email: email, 
-                      password: password);
+                      email: email,
+                      password: password,
+                    );
                 Navigator.of(
-                context,
-              ).pushNamedAndRemoveUntil('/notes/', (route) => false);
+                  context,
+                ).pushNamedAndRemoveUntil('/notes/', (route) => false);
               } on FirebaseAuthException catch (e) {
                 devtools.log("Erro ao logar");
                 if (e.code == 'invalid-credential') {
-                  devtools.log('Email ou senha inválidos');
+                  await showErrorDialog(context, 'Email ou senha inválidos');
                 }
+              } catch (e) {
+                await showErrorDialog(context, 'Erro ao realizar o login');
               }
             },
             style: TextButton.styleFrom(backgroundColor: Colors.purple[600]),
@@ -85,9 +86,7 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () {
               Navigator.of(
                 context,
-              ).pushNamedAndRemoveUntil(
-                registerRoute, 
-                (route) => false);
+              ).pushNamedAndRemoveUntil(registerRoute, (route) => false);
             },
             child: const Text("Não se registrou ainda? Registre-se aqui."),
           ),
@@ -96,3 +95,5 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
+
+
