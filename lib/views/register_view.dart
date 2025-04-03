@@ -38,6 +38,12 @@ class _RegisterViewState extends State<RegisterView> {
       appBar: AppBar(
         title: const Text("Registrar"),
         backgroundColor: Colors.blue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+        Navigator.of(context).pop();
+          },
+        ),
       ),
       body: Column(
         children: [
@@ -65,24 +71,40 @@ class _RegisterViewState extends State<RegisterView> {
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
-
               try {
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                FirebaseAuth.instance.createUserWithEmailAndPassword(
                   email: email,
                   password: password,
                 );
+                FirebaseAuth.instance.currentUser?.sendEmailVerification();
+                Navigator.of(
+                context,
+              ).pushNamed(
+                verifyEmailRoute);
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'weak-password') {
-                  await showErrorDialog(context, 'A senha que informou é fraca');
+                  await showErrorDialog(
+                    context,
+                   'A senha que informou é fraca');
                 } else if (e.code == 'email-already-in-use') {
-                  await showErrorDialog(context, 'O email que informou já está em uso');
+                  await showErrorDialog(
+                    context,
+                   'O email que informou já está em uso');
+
                 } else if (e.code == 'invalid-email') {
-                  await showErrorDialog(context, 'Email inválido');
+                  await showErrorDialog(
+                    context,
+                   'Email inválido');
+
                 } else {
-                  await showErrorDialog(context, 'Ocorreu um erro ao registrar: ${e.code}');
+                  await showErrorDialog(
+                    context,
+                   'Ocorreu um erro ao registrar: ${e.code}');
                 }
               } catch (e) {
-                await showErrorDialog(context, 'Ocorreu um erro inesperado: $e');
+                await showErrorDialog(
+                  context,
+                 'Ocorreu um erro inesperado: '+ e.toString());
               }
             },
             child: const Text("Registrar"),

@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:notes_app/constant/routes.dart';
+
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -16,21 +18,34 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Verificação de Email"),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text("Verifique seu email para continuar"),
-          const SizedBox(height: 20),
-          ElevatedButton(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
             onPressed: () async {
-              final user = FirebaseAuth.instance.currentUser;
-              devtools.log(user.toString());
-              await user?.sendEmailVerification();
+              await FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushNamedAndRemoveUntil(registerRoute, (route) => false);
             },
-            child: const Text("Enviar Email de Verificação"),
           ),
         ],
+      ),
+      body: Center( // Wrap the Column with Center
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Ensure the Column takes minimal vertical space
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center, // Center the text vertically and horizontally
+          children: [
+            const Text("Mandamos um E-mail de Verificação, verique seu email para continuar"),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                final user = FirebaseAuth.instance.currentUser;
+                devtools.log(user.toString());
+                await user?.sendEmailVerification();
+              },
+              child: const Text("Caso não tenha recebido, clique aqui para enviar outro Email de Verificação"),
+            ),
+          ],
+        ),
       ),
     );
   }

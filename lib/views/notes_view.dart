@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:notes_app/constant/routes.dart';
 import 'package:notes_app/enums/menu_action.dart';
 import 'package:notes_app/main.dart';
+import 'package:notes_app/utilities/show_dialogs.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({Key? key}) : super(key: key);
