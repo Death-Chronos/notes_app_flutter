@@ -67,11 +67,20 @@ class _LoginViewState extends State<LoginView> {
                       email: email,
                       password: password,
                     );
-                Navigator.of(
+                final user = userCredential.user;
+
+                if (user?.emailVerified?? false) {
+                  Navigator.of(
                   context,
-                ).pushNamedAndRemoveUntil('/notes/', (route) => false);
+                ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                } else {
+                  Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil(verifyEmailRoute, (route) => false); 
+                }    
+                
+
               } on FirebaseAuthException catch (e) {
-                devtools.log("Erro ao logar");
                 if (e.code == 'invalid-credential') {
                   await showErrorDialog(context, 'Email ou senha inválidos');
                 }
@@ -80,7 +89,9 @@ class _LoginViewState extends State<LoginView> {
               }
             },
             style: TextButton.styleFrom(backgroundColor: Colors.purple[600]),
-            child: const Text("Login", style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "Login", 
+              style: TextStyle(color: Colors.white)),
           ),
           TextButton(
             onPressed: () {
