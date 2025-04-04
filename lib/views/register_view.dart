@@ -1,11 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:notes_app/constant/routes.dart';
-import 'package:notes_app/main.dart';
+import 'package:notes_app/services/auth/auth_exceptions.dart';
+import 'package:notes_app/services/auth/auth_service.dart';
 import 'package:notes_app/utilities/show_dialogs.dart';
-
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -41,7 +40,7 @@ class _RegisterViewState extends State<RegisterView> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-        Navigator.of(context).pop();
+            Navigator.of(context).pop();
           },
         ),
       ),
@@ -72,40 +71,24 @@ class _RegisterViewState extends State<RegisterView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                FirebaseAuth.instance.createUserWithEmailAndPassword(
+                await AuthService.firebase().createUser(
                   email: email,
                   password: password,
                 );
-                FirebaseAuth.instance.currentUser?.sendEmailVerification();
-                Navigator.of(
-                context,
-              ).pushNamed(
-                verifyEmailRoute);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'weak-password') {
-                  await showErrorDialog(
-                    context,
-                   'A senha que informou é fraca');
-                } else if (e.code == 'email-already-in-use') {
-                  await showErrorDialog(
-                    context,
-                   'O email que informou já está em uso');
-
-                } else if (e.code == 'invalid-email') {
-                  await showErrorDialog(
-                    context,
-                   'Email inválido');
-
-                } else {
-                  await showErrorDialog(
-                    context,
-                   'Ocorreu um erro ao registrar: ${e.code}');
-                }
+                AuthService.firebase().sendEmailVerification();
+                Navigator.of(context).pushNamed(verifyEmailRoute);
+              } on WeakPasswordAuthException catch (e) {
+                await showErrorDialog(context, e.toString());
+              } on EmailAlreadyInUseAuthException catch (e) {
+                await showErrorDialog(context, e.toString());
+              } on InvalidEmailAuthException catch (e) {
+                await showErrorDialog(context, e.toString());
+              } on GenericAuthException catch (e) {
+                await showErrorDialog(context, e.toString());
               } catch (e) {
-                await showErrorDialog(
-                  context,
-                 'Ocorreu um erro inesperado: '+ e.toString());
+                await showErrorDialog(context, '${e.toString()} Está caindo aqui 2');
               }
+
             },
             child: const Text("Registrar"),
           ),
@@ -113,9 +96,7 @@ class _RegisterViewState extends State<RegisterView> {
             onPressed: () {
               Navigator.of(
                 context,
-              ).pushNamedAndRemoveUntil(
-                loginRoute, 
-                (route) => false);
+              ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
             },
             child: const Text("Já tem uma conta? Faça login aqui"),
           ),

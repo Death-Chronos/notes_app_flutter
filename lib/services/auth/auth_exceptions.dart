@@ -12,7 +12,7 @@ class WeakPasswordAuthException implements Exception {
 
   @override
   String toString() =>
-      'Senha fraca. Deve conter ao menos 8 caracteres, uma letra maiúscula, uma letra minúscula, um número e um caractere especial.';
+      'Senha fraca. Deve conter ao menos 6 caracteres.';
 }
 
 class EmailAlreadyInUseAuthException implements Exception {

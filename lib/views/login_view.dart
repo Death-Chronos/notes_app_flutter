@@ -1,9 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
-
 import 'package:notes_app/constant/routes.dart';
-import 'package:notes_app/main.dart';
+import 'package:notes_app/services/auth/auth_exceptions.dart';
+import 'package:notes_app/services/auth/auth_service.dart';
 import 'package:notes_app/utilities/show_dialogs.dart';
 
 class LoginView extends StatefulWidget {
@@ -62,36 +60,26 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                final userCredential = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(
-                      email: email,
-                      password: password,
-                    );
-                final user = userCredential.user;
+                final user = await AuthService.firebase().logIn(
+                  email: email,
+                  password: password,
+                );
 
-                if (user?.emailVerified?? false) {
+                if (user.emailVerified) {
                   Navigator.of(
-                  context,
-                ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                    context,
+                  ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
                 } else {
                   Navigator.of(
                     context,
-                  ).pushNamedAndRemoveUntil(verifyEmailRoute, (route) => false); 
-                }    
-                
-
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'invalid-credential') {
-                  await showErrorDialog(context, 'Email ou senha inválidos');
+                  ).pushNamedAndRemoveUntil(verifyEmailRoute, (route) => false);
                 }
-              } catch (e) {
-                await showErrorDialog(context, 'Erro ao realizar o login');
+              } on InvalidCredencialAuthException catch (e) {
+                await showErrorDialog(context, e.toString());
               }
             },
             style: TextButton.styleFrom(backgroundColor: Colors.purple[600]),
-            child: const Text(
-              "Login", 
-              style: TextStyle(color: Colors.white)),
+            child: const Text("Login", style: TextStyle(color: Colors.white)),
           ),
           TextButton(
             onPressed: () {
@@ -106,5 +94,3 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-
-

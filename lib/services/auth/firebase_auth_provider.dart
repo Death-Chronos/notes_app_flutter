@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:notes_app/firebase_options.dart';
 import 'package:notes_app/services/auth/auth_provider.dart';
 import 'package:notes_app/services/auth/auth_user.dart';
 import 'package:notes_app/services/auth/auth_exceptions.dart';
@@ -6,6 +8,14 @@ import 'package:firebase_auth/firebase_auth.dart'
     show FirebaseAuth, FirebaseAuthException;
 
 class FirebaseAuthProvider implements AuthProvider {
+  
+
+ @override
+  Future<void> initialize() async {
+    Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+  } 
   
   @override
   Future<AuthUser> createUser({
@@ -18,9 +28,9 @@ class FirebaseAuthProvider implements AuthProvider {
         password: password,
       );
 
-      final user = FirebaseAuth.instance.currentUser;
+      final user = currentUser;
       if (user != null) {
-        return AuthUser.fromFirebase(user);
+        return user;
       } else {
         throw UserNotLoggedInAuthException();
       }
@@ -63,11 +73,10 @@ class FirebaseAuthProvider implements AuthProvider {
         throw UserNotLoggedInAuthException();
       }
     } on FirebaseAuthException catch(e){
-      switch (e.code) {
-        case 'invalid_credentials':
-          throw InvalidCredencialAuthException();;
-        default:
-          throw GenericAuthException();
+      if (e.code == 'invalid-credential') {
+          throw InvalidCredencialAuthException();
+      }else{
+        throw GenericAuthException();
       }
     } catch(e){
       throw GenericAuthException();
@@ -85,12 +94,14 @@ class FirebaseAuthProvider implements AuthProvider {
   }
 
   @override
-  Future<void> sendEmailVerification() {
+  Future<void> sendEmailVerification() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      return user.sendEmailVerification();
+      await user.sendEmailVerification();
     } else {
       throw UserNotLoggedInAuthException();
     }
   }
+  
+  
 }
