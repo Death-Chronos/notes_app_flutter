@@ -5,7 +5,7 @@ import 'package:notes_app/services/auth/auth_service.dart';
 import 'package:notes_app/utilities/show_dialogs.dart';
 
 class NotesView extends StatefulWidget {
-  const NotesView({Key? key}) : super(key: key);
+  const NotesView({super.key});
 
   @override
   _NotesViewState createState() => _NotesViewState();
