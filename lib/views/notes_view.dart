@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notes_app/constant/routes.dart';
 import 'package:notes_app/enums/menu_action.dart';
 import 'package:notes_app/services/auth/auth_service.dart';
+import 'package:notes_app/services/crud/notes_service.dart';
 import 'package:notes_app/utilities/show_dialogs.dart';
 
 class NotesView extends StatefulWidget {
@@ -12,6 +13,23 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
+  late final NotesService _notesService;
+  String get userEmail => AuthService.firebase().currentUser!.email!;
+
+  // ao iniciar a página
+  @override
+  initState() {
+    _notesService = NotesService();
+    super.initState();
+  }
+
+  //ao fechar o widget
+  @override
+  void dispose() {
+    _notesService.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,11 +44,9 @@ class _NotesViewState extends State<NotesView> {
                   final shouldLogOut = await showLogOutDialog(context);
                   if (shouldLogOut) {
                     await AuthService.firebase().logOut();
-                    Navigator.of(context)
-                      .pushNamedAndRemoveUntil(
-                        loginRoute, 
-                        (route) => false
-                      );
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
                   }
                   break;
               }
@@ -46,7 +62,29 @@ class _NotesViewState extends State<NotesView> {
           ),
         ],
       ),
-      body: const Center(child: Text("Anotações")),
+      body: FutureBuilder(
+        future: _notesService.getOrCreateUser(email: userEmail),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              return StreamBuilder(
+                stream: _notesService.allNotes,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return const Center(
+                        child: const Text("Carregando todas as anotações"),
+                      );
+                    default:
+                      return const CircularProgressIndicator();
+                  }
+                },
+              );
+            default:
+              return const Text("batata");
+          }
+        },
+      ),
     );
   }
 }

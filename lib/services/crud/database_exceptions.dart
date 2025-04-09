@@ -48,3 +48,24 @@ class DatabaseIsNotOpenException implements Exception {
   @override
   String toString() => 'Banco de dados não está aberto.';
 }
+
+class DatabaseIsNotOpen implements Exception {
+  const DatabaseIsNotOpen();
+
+  @override
+  String toString() => 'Banco de dados não está aberto.';
+}
+
+class CouldNotDeleteUser implements Exception {
+  const CouldNotDeleteUser();
+
+  @override
+  String toString() => 'Não foi possível deletar o usuário.';
+}
+
+class CouldNotUpdateNote implements Exception {
+  const CouldNotUpdateNote();
+
+  @override
+  String toString() => 'Não foi possível atualizar a nota.';
+}
