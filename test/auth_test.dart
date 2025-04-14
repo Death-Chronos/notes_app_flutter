@@ -93,7 +93,7 @@ class MockAuthProvider implements AuthProvider {
     }
     if (email == 'jv@gmail.com') throw InvalidCredencialAuthException();
     if (password == '123456') throw InvalidCredencialAuthException();
-    const user = AuthUser(emailVerified: false);
+    const user = AuthUser(emailVerified: false, email: 'jv@gmail.com');
 
     _user = user;
     return Future.value(user);
@@ -115,7 +115,7 @@ class MockAuthProvider implements AuthProvider {
     if (!_isInicialized) throw NotInitializedException();
     if (_user == null) throw UserNotLoggedInAuthException();
 
-    const user = AuthUser(emailVerified: true);
+    const user = AuthUser(emailVerified: true, email: 'jv@gmail.com');
     _user = user;
     return Future.value();
   }

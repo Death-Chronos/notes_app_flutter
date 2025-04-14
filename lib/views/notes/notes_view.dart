@@ -37,6 +37,11 @@ class _NotesViewState extends State<NotesView> {
         title: const Text("Suas anotações"),
         backgroundColor: Colors.blue,
         actions: [
+          IconButton(
+            onPressed: (){
+              Navigator.of(context).pushNamed(newNoteRoute);
+            }, 
+            icon: const Icon(Icons.add)),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
               switch (value) {
@@ -73,7 +78,7 @@ class _NotesViewState extends State<NotesView> {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                       return const Center(
-                        child: const Text("Carregando todas as anotações"),
+                        child: Text("Carregando todas as anotações"),
                       );
                     default:
                       return const CircularProgressIndicator();
