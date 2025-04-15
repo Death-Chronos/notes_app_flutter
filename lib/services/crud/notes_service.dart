@@ -11,8 +11,10 @@ class NotesService {
 
   List<DatabaseNote> _notes = [];
 
+  // Singleton instance of NotesService(estudar Singleton pattern, mas é basicamente o @autowired do Spring, garantir que um Service só possua uma instância para todo o projeto)
   static final NotesService _shared = NotesService._sharedInstance();
   NotesService._sharedInstance();
+  
   factory NotesService() => _shared;
 
   final _notesStreamController =
@@ -185,10 +187,7 @@ class NotesService {
       emailColumn: email.toLowerCase(),
     });
 
-    return DatabaseUser(
-      id: userId,
-      email: email,
-    );
+    return DatabaseUser(id: userId, email: email);
   }
 
   Future<void> deleteUser({required String email}) async {
@@ -255,14 +254,11 @@ class NotesService {
 class DatabaseUser {
   final int id;
   final String email;
-  const DatabaseUser({
-    required this.id,
-    required this.email,
-  });
+  const DatabaseUser({required this.id, required this.email});
 
   DatabaseUser.fromRow(Map<String, Object?> map)
-      : id = map[idColumn] as int,
-        email = map[emailColumn] as String;
+    : id = map[idColumn] as int,
+      email = map[emailColumn] as String;
 
   @override
   String toString() => 'Person, ID = $id, email = $email';
@@ -288,11 +284,11 @@ class DatabaseNote {
   });
 
   DatabaseNote.fromRow(Map<String, Object?> map)
-      : id = map[idColumn] as int,
-        userId = map[userIdColumn] as int,
-        text = map[textColumn] as String,
-        isSyncedWithCloud =
-            (map[isSyncedWithCloudColumn] as int) == 1 ? true : false;
+    : id = map[idColumn] as int,
+      userId = map[userIdColumn] as int,
+      text = map[textColumn] as String,
+      isSyncedWithCloud =
+          (map[isSyncedWithCloudColumn] as int) == 1 ? true : false;
 
   @override
   String toString() =>

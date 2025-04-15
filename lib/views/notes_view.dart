@@ -37,11 +37,6 @@ class NotesViewState extends State<NotesView> {
         title: const Text("Suas anotações"),
         backgroundColor: Colors.blue,
         actions: [
-          IconButton(
-            onPressed: (){
-              Navigator.of(context).pushNamed(newNoteRoute);
-            }, 
-            icon: const Icon(Icons.add)),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
               switch (value) {
@@ -80,10 +75,6 @@ class NotesViewState extends State<NotesView> {
                       return const Center(
                         child: Text("Carregando todas as anotações"),
                       );
-                    case ConnectionState.active:
-                     return const Center(
-                        child: Text("Nenhuma anotação encontrada"),
-                      );  
                     default:
                       return const CircularProgressIndicator();
                   }

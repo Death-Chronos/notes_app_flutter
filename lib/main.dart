@@ -15,6 +15,7 @@ void main() {
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const HomePage(),
       routes: {
+        // Definindo as rotas do aplicativo
         loginRoute: (context) => const LoginView(),
         registerRoute: (context) => const RegisterView(),
         verifyEmailRoute: (context) => const VerifyEmailView(),
@@ -31,8 +32,16 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
+      // Inicializa o Firebase e aguarda a conclusão
+      // O Firebase é inicializado no AuthService, que é um singleton
       future: AuthService.firebase().initialize(),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        // Verifica o estado da conexão, e de acordo com o estado, retorna a tela apropriada
+        // Se o Firebase estiver inicializado, verifica se o usuário está logado e se o email está verificado
+        // Se o usuário estiver logado e o email estiver verificado, retorna a tela de notas
+        // Se o usuário não estiver logado, retorna a tela de login
+        // Se o usuário estiver logado, mas o email não estiver verificado, retorna a tela de verificação de email
+        // Se o Firebase não estiver inicializado, retorna uma tela de carregamento
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
             return const Center(child: CircularProgressIndicator());
