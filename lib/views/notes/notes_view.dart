@@ -4,6 +4,7 @@ import 'package:notes_app/enums/menu_action.dart';
 import 'package:notes_app/services/auth/auth_service.dart';
 import 'package:notes_app/services/crud/notes_service.dart';
 import 'package:notes_app/utilities/show_dialogs.dart';
+import 'dart:developer' as dev show log;
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -23,13 +24,6 @@ class NotesViewState extends State<NotesView> {
     super.initState();
   }
 
-  //ao fechar o widget
-  @override
-  void dispose() {
-    _notesService.close();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,10 +32,11 @@ class NotesViewState extends State<NotesView> {
         backgroundColor: Colors.blue,
         actions: [
           IconButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.of(context).pushNamed(newNoteRoute);
-            }, 
-            icon: const Icon(Icons.add)),
+            },
+            icon: const Icon(Icons.add),
+          ),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
               switch (value) {
@@ -81,9 +76,29 @@ class NotesViewState extends State<NotesView> {
                         child: Text("Carregando todas as anotações"),
                       );
                     case ConnectionState.active:
-                     return const Center(
-                        child: Text("Nenhuma anotação encontrada"),
-                      );  
+                      if (snapshot.hasData) {
+                        final allNotes = snapshot.data as List<DatabaseNote>;
+                        dev.log(allNotes.toString());
+                        return ListView.builder(
+                          itemBuilder: (context, index) {
+                            final note = allNotes[index];
+                            return ListTile(
+                              title: Text(
+                                note.text,
+                                maxLines: 1,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                                ),
+                            );
+                          },
+                          itemCount: allNotes.length,
+                        );
+                        // return const Text("Anotações carregadas com sucesso");
+                      } else {
+                        return const Center(
+                          child: Text("Nenhuma anotação encontrada"),
+                        );
+                      }
                     default:
                       return const CircularProgressIndicator();
                   }

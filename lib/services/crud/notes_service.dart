@@ -13,12 +13,21 @@ class NotesService {
 
   // Singleton instance of NotesService(estudar Singleton pattern, mas é basicamente o @autowired do Spring, garantir que um Service só possua uma instância para todo o projeto)
   static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance();
-  
+  NotesService._sharedInstance() {
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      // broadcast permite que vários ouvintes escutem o mesmo stream
+      onListen: () {
+        _notesStreamController.sink.add(_shared._notes);
+      }, // quando alguém escuta o stream, adiciona as anotações atuais a esse novo ouvinte(Listenner)
+      onCancel: () {
+        _notesStreamController.sink.close();
+      }, // fecha o stream quando não houver mais ouvintes
+    );
+  }
+
   factory NotesService() => _shared;
 
-  final _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
@@ -51,7 +60,7 @@ class NotesService {
     await getNote(id: note.id);
 
     // update DB
-    final updatesCount = await db.update(noteTable, {
+    final updatesCount = await db.update(noteTable, where: 'id = ?', whereArgs: [note.id], {
       textColumn: text,
       isSyncedWithCloudColumn: 0,
     });
@@ -87,7 +96,8 @@ class NotesService {
 
     if (notes.isEmpty) {
       throw CouldNotFindNote();
-    } else {
+    } 
+    else {
       final note = DatabaseNote.fromRow(notes.first);
       _notes.removeWhere((note) => note.id == id);
       _notes.add(note);

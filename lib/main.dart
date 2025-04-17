@@ -56,8 +56,6 @@ class HomePage extends StatelessWidget {
             } else {
               return const LoginView();
             }
-          case ConnectionState.none:
-            return const Center(child: Text("Firebase não inicializado"));
           default:
             return const Center(child: Text("Erro ao inicializar o Firebase"));
         }
@@ -66,4 +64,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
