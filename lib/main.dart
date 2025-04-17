@@ -55,7 +55,7 @@ class HomePage extends StatelessWidget {
               }
             } else {
               return const LoginView();
-            }
+            } 
           default:
             return const Center(child: Text("Erro ao inicializar o Firebase"));
         }

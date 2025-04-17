@@ -6,6 +6,8 @@ import 'package:notes_app/services/crud/notes_service.dart';
 import 'package:notes_app/utilities/show_dialogs.dart';
 import 'dart:developer' as dev show log;
 
+import 'package:notes_app/views/notes/notes_list_view.dart';
+
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
 
@@ -78,21 +80,13 @@ class NotesViewState extends State<NotesView> {
                     case ConnectionState.active:
                       if (snapshot.hasData) {
                         final allNotes = snapshot.data as List<DatabaseNote>;
-                        dev.log(allNotes.toString());
-                        return ListView.builder(
-                          itemBuilder: (context, index) {
-                            final note = allNotes[index];
-                            return ListTile(
-                              title: Text(
-                                note.text,
-                                maxLines: 1,
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                                ),
-                            );
+                        return NotesListView(
+                          notes: allNotes,
+                          onDeleteNote: (note) async {
+                            await _notesService.deleteNote(id: note.id);
                           },
-                          itemCount: allNotes.length,
                         );
+
                         // return const Text("Anotações carregadas com sucesso");
                       } else {
                         return const Center(
