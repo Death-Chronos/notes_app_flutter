@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:notes_app/services/crud/notes_service.dart';
-import 'package:notes_app/utilities/show_dialogs.dart';
+import 'package:notes_app/utilities/dialogs/show_dialogs.dart';
 
-typedef DeleteNoteCallback = void Function(DatabaseNote note);
+//Guarda funções de callback para serem chamadas quando o usuário clicar em um item da lista, como as funções de deletar ou editar uma nota(as funções são passadas no notes_view).
+typedef NoteCallback = void Function(DatabaseNote note);
 
 class NotesListView extends StatelessWidget {
   final List<DatabaseNote> notes;
-  final DeleteNoteCallback onDeleteNote;
+  final NoteCallback onDeleteNote;
+  final NoteCallback onTap;
+
   const NotesListView({
     super.key,
     required this.notes,
     required this.onDeleteNote,
+    required this.onTap,
   });
 
   @override
@@ -19,6 +23,9 @@ class NotesListView extends StatelessWidget {
       itemBuilder: (context, index) {
         final note = notes[index];
         return ListTile(
+          onTap: () {
+            onTap(note);
+          },
           title: Text(
             note.text,
             maxLines: 1,

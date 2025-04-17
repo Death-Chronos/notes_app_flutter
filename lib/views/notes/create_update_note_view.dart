@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:notes_app/services/auth/auth_service.dart';
 import 'package:notes_app/services/crud/notes_service.dart';
+import 'package:notes_app/utilities/generics/get_arguments.dart';
 
-class NewNoteView extends StatefulWidget {
-  const NewNoteView({super.key});
+class CreateUpdateNoteView extends StatefulWidget {
+  const CreateUpdateNoteView({super.key});
 
   @override
-  NewNoteViewState createState() => NewNoteViewState();
+  CreateUpdateNoteViewState createState() => CreateUpdateNoteViewState();
 }
 
-class NewNoteViewState extends State<NewNoteView> {
+class CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
   DatabaseNote? _note;
   late final NotesService _notesService;
   late final TextEditingController _textController;
 
   @override
+
   void initState() {
     _notesService = NotesService();
     _textController = TextEditingController();
@@ -38,8 +40,15 @@ class NewNoteViewState extends State<NewNoteView> {
     _textController.addListener(_textControllerListener);
   }
 
-  //Cria uma nova anotação
-  Future<DatabaseNote> createNewNote() async {
+  //Cria uma nova anotação caso não exista, se existir, manda a existente.
+  Future<DatabaseNote> createOrGetExistingNote(BuildContext context) async {
+    final widgetNote = context.getArgument<DatabaseNote>();
+
+    if (widgetNote != null) {
+      _note = widgetNote;
+      _textController.text = widgetNote.text;
+      return widgetNote;
+    }
     final existingNotes = _note;
     if (existingNotes != null) {
       return existingNotes;
@@ -87,11 +96,10 @@ class NewNoteViewState extends State<NewNoteView> {
         backgroundColor: Colors.blue,
       ),
       body: FutureBuilder(
-        future: createNewNote(),
+        future: createOrGetExistingNote(context),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              _note = snapshot.data as DatabaseNote;
               _setupTextControllerListener();
               return TextField(
                 controller: _textController,

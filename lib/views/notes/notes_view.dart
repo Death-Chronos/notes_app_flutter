@@ -3,7 +3,7 @@ import 'package:notes_app/constant/routes.dart';
 import 'package:notes_app/enums/menu_action.dart';
 import 'package:notes_app/services/auth/auth_service.dart';
 import 'package:notes_app/services/crud/notes_service.dart';
-import 'package:notes_app/utilities/show_dialogs.dart';
+import 'package:notes_app/utilities/dialogs/show_dialogs.dart';
 import 'dart:developer' as dev show log;
 
 import 'package:notes_app/views/notes/notes_list_view.dart';
@@ -35,7 +35,7 @@ class NotesViewState extends State<NotesView> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(newNoteRoute);
+              Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
             },
             icon: const Icon(Icons.add),
           ),
@@ -83,7 +83,13 @@ class NotesViewState extends State<NotesView> {
                         return NotesListView(
                           notes: allNotes,
                           onDeleteNote: (note) async {
-                            await _notesService.deleteNote(id: note.id);
+                            await _notesService.deleteNote(id: note.id); //note que aqui ele está passando a função que deve ser executada quando o usuário clicar no botão de deletar
+                          },
+                          onTap:(note) async {
+                            Navigator.of(context).pushNamed(
+                              createOrUpdateNoteRoute,
+                              arguments: note,
+                            );
                           },
                         );
 
@@ -94,7 +100,7 @@ class NotesViewState extends State<NotesView> {
                         );
                       }
                     default:
-                      return const CircularProgressIndicator();
+                      return const CircularProgressIndicator(color: Colors.redAccent,);
                   }
                 },
               );
