@@ -69,3 +69,10 @@ class CouldNotUpdateNote implements Exception {
   @override
   String toString() => 'Não foi possível atualizar a nota.';
 }
+
+class UserNotSet implements Exception {
+  const UserNotSet();
+
+  @override
+  String toString() => 'Usuário não definido.';
+}

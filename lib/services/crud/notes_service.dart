@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:notes_app/services/crud/database_exceptions.dart';
+import 'package:notes_app/extensions/list/filter.dart';
+import 'package:notes_app/services/crud/crud_exceptions.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
@@ -11,6 +12,8 @@ class NotesService {
 
   List<DatabaseNote> _notes = [];
 
+  DatabaseUser? _user; // o usuário atual, que está logado no app
+
   // Singleton instance of NotesService(estudar Singleton pattern, mas é basicamente o @autowired do Spring, garantir que um Service só possua uma instância para todo o projeto)
   static final NotesService _shared = NotesService._sharedInstance();
   NotesService._sharedInstance() {
@@ -19,9 +22,6 @@ class NotesService {
       onListen: () {
         _notesStreamController.sink.add(_shared._notes);
       }, // quando alguém escuta o stream, adiciona as anotações atuais a esse novo ouvinte(Listenner)
-      onCancel: () {
-        _notesStreamController.sink.close();
-      }, // fecha o stream quando não houver mais ouvintes
     );
   }
 
@@ -29,14 +29,32 @@ class NotesService {
 
   late final StreamController<List<DatabaseNote>> _notesStreamController;
 
-  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
+  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream.filter((note) {
+    final currentUser = _user;
+    if (currentUser != null) {
+      return note.userId == currentUser.id; // filtra as notas para mostrar apenas as do usuário atual
+    } else {
+      throw UserNotSet();
+    }
+  }); 
+  // o stream possui uma lista de notas, e o filter filtra as notas para mostrar apenas as do usuário atual
 
-  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+  Future<DatabaseUser> getOrCreateUser({
+    required String email,
+    bool setAsCurrentUser = true,
+    }) async {
     try {
       final user = await getUser(email: email);
+      if (setAsCurrentUser) {
+        _user = user;
+      }
       return user;
     } on CouldNotFindUser {
       final createdUser = await createUser(email: email);
+
+      if (setAsCurrentUser) {
+        _user = createdUser;
+      }
       return createdUser;
     } catch (e) {
       rethrow;
