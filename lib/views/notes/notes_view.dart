@@ -4,7 +4,7 @@ import 'package:notes_app/enums/menu_action.dart';
 import 'package:notes_app/services/auth/auth_service.dart';
 import 'package:notes_app/services/crud/notes_service.dart';
 import 'package:notes_app/utilities/dialogs/show_dialogs.dart';
-import 'dart:developer' as dev show log;
+// import 'dart:developer' as dev show log;
 
 import 'package:notes_app/views/notes/notes_list_view.dart';
 
@@ -17,7 +17,7 @@ class NotesView extends StatefulWidget {
 
 class NotesViewState extends State<NotesView> {
   late final NotesService _notesService;
-  String get userEmail => AuthService.firebase().currentUser!.email!;
+  String get userEmail => AuthService.firebase().currentUser!.email;
 
   // ao iniciar a página
   @override
