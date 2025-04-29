@@ -43,7 +43,7 @@ Future<bool> showLogOutDialog(BuildContext context) {
     title: "Sair",
     content: "Tem certeza que deseja sair?",
     optionsBuilder: () => {'Cancelar': false, 'Sair': true},
-  ).then( (value) => value ?? false);
+  ).then((value) => value ?? false);
 }
 
 Future<void> showErrorDialog(BuildContext context, String text) {
@@ -63,3 +63,13 @@ Future<bool> showDeleteNoteDialog(BuildContext context, CloudNote note) {
     optionsBuilder: () => {'Cancelar': false, 'Deletar': true},
   ).then((value) => value ?? false);
 }
+
+Future<void> showCannotShareEmptyNoteDialog(BuildContext context) {
+  return showGenericDialog<void>(
+    context: context,
+    title: "Erro ao compartilhar anotação",
+    content: "Não é possível compartilhar uma anotação vazia",
+    optionsBuilder: () => {'Ok': null},
+  );
+}
+
