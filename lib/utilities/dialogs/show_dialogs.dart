@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app/services/crud/notes_service.dart';
+import 'package:notes_app/services/cloud/cloud_note.dart';
 
 //um map para as opções de botão, titulo e valor. por exemplo : 'deletar', true - 'cancelar', false
 typedef DialogOptionBuilder<T> = Map<String, T> Function();
@@ -55,7 +55,7 @@ Future<void> showErrorDialog(BuildContext context, String text) {
   );
 }
 
-Future<bool> showDeleteNoteDialog(BuildContext context, DatabaseNote note) {
+Future<bool> showDeleteNoteDialog(BuildContext context, CloudNote note) {
   return showGenericDialog<bool>(
     context: context,
     title: "Deletar anotação",

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:notes_app/constant/cloud_storage.dart';
-import 'package:flutter/foundation.dart';
 
 class CloudNote {
   final String documentId;
