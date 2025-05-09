@@ -43,5 +43,10 @@ class AuthService implements AuthProvider {
     return provider.sendEmailVerification();
   }
   
+  @override
+  Future<void> sendPasswordReset({required String toEmail}) =>
+      provider.sendPasswordReset(toEmail: toEmail);
+
+  
  
 }
