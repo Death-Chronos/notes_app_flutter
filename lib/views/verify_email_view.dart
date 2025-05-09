@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:developer' as devtools show log;
 
-import 'package:notes_app/constant/routes.dart';
-import 'package:notes_app/services/auth/auth_service.dart';
+import 'package:notes_app/services/auth/bloc/auth_bloc.dart';
+import 'package:notes_app/services/auth/bloc/auth_event.dart';
 
 
 class VerifyEmailView extends StatefulWidget {
@@ -11,7 +12,7 @@ class VerifyEmailView extends StatefulWidget {
   @override
   VerifyEmailViewState createState() => VerifyEmailViewState();
 }
-
+  
 class VerifyEmailViewState extends State<VerifyEmailView> {
   @override
   Widget build(BuildContext context) {
@@ -22,8 +23,9 @@ class VerifyEmailViewState extends State<VerifyEmailView> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              await AuthService.firebase().logOut();
-              Navigator.of(context).pushNamedAndRemoveUntil(registerRoute, (route) => false);
+              context.read<AuthBloc>().add(
+                const AuthEventLogOut(),
+              );
             },
           ),
         ],
@@ -38,9 +40,10 @@ class VerifyEmailViewState extends State<VerifyEmailView> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                final user = AuthService.firebase().currentUser;
-                devtools.log(user.toString());
-                await AuthService.firebase().sendEmailVerification();
+                
+                context.read()<AuthBloc>().add(
+                  const AuthEventSendEmailVerification(),
+                );
               },
               child: const Text("Caso não tenha recebido, clique aqui para enviar outro Email de Verificação"),
             ),

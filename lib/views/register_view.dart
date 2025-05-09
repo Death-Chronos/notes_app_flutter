@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes_app/constant/routes.dart';
 import 'package:notes_app/services/auth/auth_exceptions.dart';
 import 'package:notes_app/services/auth/auth_service.dart';
+import 'package:notes_app/services/auth/bloc/auth_bloc.dart';
+import 'package:notes_app/services/auth/bloc/auth_event.dart';
+import 'package:notes_app/services/auth/bloc/auth_state.dart';
 import 'package:notes_app/utilities/dialogs/show_dialogs.dart';
 
 class RegisterView extends StatefulWidget {
@@ -31,74 +35,88 @@ class RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Registrar"),
-        backgroundColor: Colors.blue,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
-      body: Column(
-        children: [
-          TextField(
-            controller: _email,
-            enableSuggestions: false,
-            autocorrect: false,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: "Email",
-              hintText: "Digite o seu email",
-            ),
-          ),
-          TextField(
-            controller: _password,
-            obscureText: true,
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(
-              labelText: "Senha",
-              hintText: "Digite a sua senha",
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              final email = _email.text;
-              final password = _password.text;
-              try {
-                await AuthService.firebase().createUser(
-                  email: email,
-                  password: password,
-                );
-                AuthService.firebase().sendEmailVerification();
-                Navigator.of(context).pushNamed(verifyEmailRoute);
-              } on WeakPasswordAuthException catch (e) {
-                await showErrorDialog(context, e.toString());
-              } on EmailAlreadyInUseAuthException catch (e) {
-                await showErrorDialog(context, e.toString());
-              } on InvalidEmailAuthException catch (e) {
-                await showErrorDialog(context, e.toString());
-              } on GenericAuthException catch (e) {
-                await showErrorDialog(context, e.toString());
-              } catch (e) {
-                await showErrorDialog(context, e.toString());
-              }
-
-            },
-            child: const Text("Registrar"),
-          ),
-          TextButton(
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthStateRegistering) {
+          var e = state.exception;
+          if (e is EmailAlreadyInUseAuthException) {
+            showErrorDialog(
+              context,
+              e.toString(),
+            );
+          } else if (e is WeakPasswordAuthException) {
+            showErrorDialog(
+              context,
+              e.toString(),
+            );
+          }
+            else if (e is InvalidEmailAuthException) {
+            showErrorDialog(
+              context,
+              e.toString(),
+            );
+          } else if (e is GenericAuthException) {
+            showErrorDialog(
+              context,
+              e.toString(),
+            );
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Registrar"),
+          backgroundColor: Colors.blue,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.of(
-                context,
-              ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+              Navigator.of(context).pop();
             },
-            child: const Text("Já tem uma conta? Faça login aqui"),
           ),
-        ],
+        ),
+        body: Column(
+          children: [
+            TextField(
+              controller: _email,
+              enableSuggestions: false,
+              autocorrect: false,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: "Email",
+                hintText: "Digite o seu email",
+              ),
+            ),
+            TextField(
+              controller: _password,
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                labelText: "Senha",
+                hintText: "Digite a sua senha",
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
+                  context.read<AuthBloc>().add(
+                    AuthEventRegister(
+                      email, 
+                      password,
+                    )
+                  );
+              },
+              child: const Text("Registrar"),
+            ),
+            TextButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(const AuthEventLogOut());
+              },
+              child: const Text("Já tem uma conta? Faça login aqui"),
+            ),
+          ],
+        ),
       ),
     );
   }

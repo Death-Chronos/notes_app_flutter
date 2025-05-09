@@ -5,6 +5,7 @@ import 'package:notes_app/services/auth/auth_exceptions.dart';
 import 'package:notes_app/services/auth/bloc/auth_bloc.dart';
 import 'package:notes_app/services/auth/bloc/auth_event.dart';
 import 'package:notes_app/services/auth/bloc/auth_state.dart';
+import 'package:notes_app/utilities/dialogs/loading_dialog.dart';
 import 'package:notes_app/utilities/dialogs/show_dialogs.dart';
 
 class LoginView extends StatefulWidget {
@@ -17,6 +18,7 @@ class LoginView extends StatefulWidget {
 class LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  CloseDialog? _closeDialogHandle;
 
   @override
   void initState() {
@@ -34,65 +36,85 @@ class LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Login"), backgroundColor: Colors.blue),
-      body: Column(
-        children: [
-          TextField(
-            controller: _email,
-            enableSuggestions: false,
-            autocorrect: false,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: "Email",
-              hintText: "Digite o seu email",
-            ),
-          ),
-          TextField(
-            controller: _password,
-            obscureText: true,
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(
-              labelText: "Senha",
-              hintText: "Digite a sua senha",
-            ),
-          ),
-          BlocListener<AuthBloc, AuthState>(
-            listener: (context, state) async {
-              if (state is AuthStateLoggedOut) {
-                var exception = state.exception;
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is AuthStateLoggedOut) {
 
-                if (exception is InvalidCredencialAuthException) {
-                  await showErrorDialog(context, exception.toString());
-                } else if (exception is GenericAuthException) {
-                  await showErrorDialog(context, exception.toString());
-                }
-              }
-            },
-            child: TextButton(
+          final closeDialog = _closeDialogHandle;
+
+          //Primeiro verifica pelo estado
+          //Se não estiver carregando, mas o closeDialog não for nulo, quer dizer que existe um dialogo aberto, então iremos fecha-lo
+          if(!state.isLoading && closeDialog != null) {
+            //closeDialogHandle é um método que fecha o dialogo de carregamento, o próprio showLoadingDialog retorna esse método
+            closeDialog();
+            _closeDialogHandle = null;
+            //Se estiver carregando, e o closeDialog for nulo, então devemos mostar o diálogo
+          } else if (state.isLoading && closeDialog == null) {
+            _closeDialogHandle = showLoadingDialog(
+              context: context,
+              text: state.loadingText!,
+            );
+          }
+
+          var exception = state.exception;
+
+          if (exception is InvalidCredencialAuthException) {
+            await showErrorDialog(context, exception.toString());
+          } else if (exception is GenericAuthException) {
+            await showErrorDialog(context, exception.toString());
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Login"),
+          backgroundColor: Colors.blue,
+        ),
+        body: Column(
+          children: [
+            TextField(
+              controller: _email,
+              enableSuggestions: false,
+              autocorrect: false,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: "Email",
+                hintText: "Digite o seu email",
+              ),
+            ),
+            TextField(
+              controller: _password,
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                labelText: "Senha",
+                hintText: "Digite a sua senha",
+              ),
+            ),
+            TextButton(
               onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
-
-                context.read<AuthBloc>().add(
-                  AuthEventLogIn(
-                    email, 
-                    password));
+            
+                context.read<AuthBloc>().add(AuthEventLogIn(email, password));
               },
-              style: TextButton.styleFrom(backgroundColor: Colors.purple[600]),
-              child: const Text("Login", style: TextStyle(color: Colors.white)),
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.purple[600],
+              ),
+              child: const Text(
+                "Login",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).pushNamedAndRemoveUntil(registerRoute, (route) => false);
-            },
-            child: const Text("Não se registrou ainda? Registre-se aqui."),
-          ),
-        ],
+            TextButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(const AuthEventShouldRegister());
+              },
+              child: const Text("Não se registrou ainda? Registre-se aqui."),
+            ),
+          ],
+        ),
       ),
     );
   }
