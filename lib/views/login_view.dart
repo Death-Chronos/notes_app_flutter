@@ -4,6 +4,7 @@ import 'package:notes_app/constant/routes.dart';
 import 'package:notes_app/services/auth/auth_exceptions.dart';
 import 'package:notes_app/services/auth/bloc/auth_bloc.dart';
 import 'package:notes_app/services/auth/bloc/auth_event.dart';
+import 'package:notes_app/services/auth/bloc/auth_state.dart';
 import 'package:notes_app/utilities/dialogs/show_dialogs.dart';
 
 class LoginView extends StatefulWidget {
@@ -57,23 +58,31 @@ class LoginViewState extends State<LoginView> {
               hintText: "Digite a sua senha",
             ),
           ),
-          TextButton(
-            onPressed: () async {
-              final email = _email.text;
-              final password = _password.text;
-              try {
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) async {
+              if (state is AuthStateLoggedOut) {
+                var exception = state.exception;
+
+                if (exception is InvalidCredencialAuthException) {
+                  await showErrorDialog(context, exception.toString());
+                } else if (exception is GenericAuthException) {
+                  await showErrorDialog(context, exception.toString());
+                }
+              }
+            },
+            child: TextButton(
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
+
                 context.read<AuthBloc>().add(
                   AuthEventLogIn(
                     email, 
-                    password,
-                      )
-                    );
-              } on InvalidCredencialAuthException catch (e) {
-                await showErrorDialog(context, e.toString());
-              }
-            },
-            style: TextButton.styleFrom(backgroundColor: Colors.purple[600]),
-            child: const Text("Login", style: TextStyle(color: Colors.white)),
+                    password));
+              },
+              style: TextButton.styleFrom(backgroundColor: Colors.purple[600]),
+              child: const Text("Login", style: TextStyle(color: Colors.white)),
+            ),
           ),
           TextButton(
             onPressed: () {

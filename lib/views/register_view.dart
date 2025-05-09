@@ -84,7 +84,7 @@ class RegisterViewState extends State<RegisterView> {
               } on GenericAuthException catch (e) {
                 await showErrorDialog(context, e.toString());
               } catch (e) {
-                await showErrorDialog(context, '${e.toString()} Está caindo aqui 2');
+                await showErrorDialog(context, e.toString());
               }
 
             },
