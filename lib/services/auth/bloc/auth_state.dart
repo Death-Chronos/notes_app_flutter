@@ -54,6 +54,13 @@ class AuthStateLoggedOut extends AuthState with EquatableMixin {
     super.loadingText = null,
   });
 
+  //Existem 3 'estados' de logout: 
+  //logout normal(deslogado, excepetion null e isLoading false), 
+  //logout com erro(Tentou logar e deu errado, exception existente e isLoading false) 
+  //e tentando logar(isLoading true e exception null)
+  //Por isso, o AuthStateLoggedOut é o único que tem o EquatableMixin, 
+  //pois ele verifica as variaveis exception e isLoading para descidir se o estado(O objeto) 
+  //é realmente igual entre outro objeto de mesma classe
   @override
   List<Object?> get props => [exception, isLoading];
 }

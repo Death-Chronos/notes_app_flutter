@@ -23,10 +23,6 @@ void main() {
       ),
       routes: {
         // Definindo as rotas do aplicativo
-        loginRoute: (context) => const LoginView(),
-        registerRoute: (context) => const RegisterView(),
-        verifyEmailRoute: (context) => const VerifyEmailView(),
-        notesRoute: (context) => const NotesView(),
         createOrUpdateNoteRoute: (context) => const CreateUpdateNoteView(),
       },
     ),
@@ -48,6 +44,8 @@ class HomePage extends StatelessWidget {
             return const LoginView();
           case AuthStateNeedsVerification _:
             return const VerifyEmailView();
+          case AuthStateRegistering _:
+            return const RegisterView();
           default:
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
