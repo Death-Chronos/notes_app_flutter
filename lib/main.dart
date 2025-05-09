@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes_app/constant/routes.dart';
-import 'package:notes_app/services/auth/auth_service.dart';
+import 'package:notes_app/services/auth/bloc/auth_bloc.dart';
+import 'package:notes_app/services/auth/bloc/auth_event.dart';
+import 'package:notes_app/services/auth/bloc/auth_state.dart';
+import 'package:notes_app/services/auth/firebase_auth_provider.dart';
 import 'package:notes_app/views/login_view.dart';
 import 'package:notes_app/views/notes/create_update_note_view.dart';
 import 'package:notes_app/views/notes/notes_view.dart';
@@ -13,7 +17,10 @@ void main() {
     MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomePage(),
+      home: BlocProvider<AuthBloc>(
+        create: (context) => AuthBloc(FirebaseAuthProvider()),
+        child: const HomePage(),
+      ),
       routes: {
         // Definindo as rotas do aplicativo
         loginRoute: (context) => const LoginView(),
@@ -31,36 +38,21 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      // Inicializa o Firebase e aguarda a conclusão
-      // O Firebase é inicializado no AuthService, que é um singleton
-      future: AuthService.firebase().initialize(),
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        // Verifica o estado da conexão, e de acordo com o estado, retorna a tela apropriada
-        // Se o Firebase estiver inicializado, verifica se o usuário está logado e se o email está verificado
-        // Se o usuário estiver logado e o email estiver verificado, retorna a tela de notas
-        // Se o usuário não estiver logado, retorna a tela de login
-        // Se o usuário estiver logado, mas o email não estiver verificado, retorna a tela de verificação de email
-        // Se o Firebase não estiver inicializado, retorna uma tela de carregamento
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return const Center(
-              child: CircularProgressIndicator());
-          case ConnectionState.done:
-            final user = AuthService.firebase().currentUser;
-            if (user != null) {
-              if (user.emailVerified) {
-                return const NotesView();
-              } else {
-                return const VerifyEmailView();
-              }
-            } else {
-              return const LoginView();
-            } 
+    context.read<AuthBloc>().add(const AuthEventInitialize());
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        switch (state) {
+          case AuthStateLoggedIn _:
+            return const NotesView();
+          case AuthStateLoggedOut _:
+            return const LoginView();
+          case AuthStateNeedsVerification _:
+            return const VerifyEmailView();
           default:
-            return const Center(child: Text("Erro ao inicializar o Firebase"));
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
         }
-        // Default return statement to handle all cases
       },
     );
   }
