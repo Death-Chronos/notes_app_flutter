@@ -17,7 +17,6 @@ class LoginView extends StatefulWidget {
 class LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
-  CloseDialog? _closeDialogHandle;
 
   @override
   void initState() {
@@ -38,25 +37,7 @@ class LoginViewState extends State<LoginView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
         if (state is AuthStateLoggedOut) {
-
-          final closeDialog = _closeDialogHandle;
-
-          //Primeiro verifica pelo estado
-          //Se não estiver carregando, mas o closeDialog não for nulo, quer dizer que existe um dialogo aberto, então iremos fecha-lo
-          if(!state.isLoading && closeDialog != null) {
-            //closeDialogHandle é um método que fecha o dialogo de carregamento, o próprio showLoadingDialog retorna esse método
-            closeDialog();
-            _closeDialogHandle = null;
-            //Se estiver carregando, e o closeDialog for nulo, então devemos mostar o diálogo
-          } else if (state.isLoading && closeDialog == null) {
-            _closeDialogHandle = showLoadingDialog(
-              context: context,
-              text: state.loadingText!,
-            );
-          }
-
           var exception = state.exception;
-
           if (exception is InvalidCredencialAuthException) {
             await showErrorDialog(context, exception.toString());
           } else if (exception is GenericAuthException) {
