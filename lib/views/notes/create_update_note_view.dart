@@ -4,8 +4,6 @@ import 'package:notes_app/services/cloud/cloud_note.dart';
 import 'package:notes_app/services/cloud/firebase_cloud_storage.dart';
 import 'package:notes_app/utilities/dialogs/show_dialogs.dart';
 import 'package:notes_app/utilities/generics/get_arguments.dart';
-import 'dart:developer' as dev show log;
-
 import 'package:share_plus/share_plus.dart';
 
 class CreateUpdateNoteView extends StatefulWidget {

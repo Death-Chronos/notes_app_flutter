@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:notes_app/constant/routes.dart';
 import 'package:notes_app/services/auth/auth_exceptions.dart';
-import 'package:notes_app/services/auth/auth_service.dart';
 import 'package:notes_app/services/auth/bloc/auth_bloc.dart';
 import 'package:notes_app/services/auth/bloc/auth_event.dart';
 import 'package:notes_app/services/auth/bloc/auth_state.dart';
@@ -74,48 +72,60 @@ class RegisterViewState extends State<RegisterView> {
             },
           ),
         ),
-        body: Column(
-          children: [
-            TextField(
-              controller: _email,
-              enableSuggestions: false,
-              autocorrect: false,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: "Email",
-                hintText: "Digite o seu email",
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Crie uma conta para começar a usar o aplicativo.",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.blue,
+                ),
               ),
-            ),
-            TextField(
-              controller: _password,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(
-                labelText: "Senha",
-                hintText: "Digite a sua senha",
+              TextField(
+                controller: _email,
+                enableSuggestions: false,
+                autocorrect: false,
+                autofocus: true,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: "Email",
+                  hintText: "Digite o seu email",
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () async {
-                final email = _email.text;
-                final password = _password.text;
-                  context.read<AuthBloc>().add(
-                    AuthEventRegister(
-                      email, 
-                      password,
-                    )
-                  );
-              },
-              child: const Text("Registrar"),
-            ),
-            TextButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(const AuthEventLogOut());
-              },
-              child: const Text("Já tem uma conta? Faça login aqui"),
-            ),
-          ],
+              TextField(
+                controller: _password,
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration: const InputDecoration(
+                  labelText: "Senha",
+                  hintText: "Digite a sua senha",
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final email = _email.text;
+                  final password = _password.text;
+                    context.read<AuthBloc>().add(
+                      AuthEventRegister(
+                        email, 
+                        password,
+                      )
+                    );
+                },
+                child: const Text("Registrar"),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(const AuthEventLogOut());
+                },
+                child: const Text("Já tem uma conta? Faça login aqui"),
+              ),
+            ],
+          ),
         ),
       ),
     );
