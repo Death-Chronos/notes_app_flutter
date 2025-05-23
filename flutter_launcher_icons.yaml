@@ -1,0 +1,7 @@
+dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+flutter_launcher_icons:
+  android: "laucher_icon"
+  ios: "launcher_icon"
+  image_path: "assets/icon/icon.png"
+  remove_alpha_ios: true
