@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:notes_app/extensions/buildcontext/loc.dart';
 import 'package:notes_app/services/auth/bloc/auth_bloc.dart';
 import 'package:notes_app/services/auth/bloc/auth_event.dart';
 import 'package:notes_app/services/auth/bloc/auth_state.dart';
@@ -40,14 +39,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           if (state.exception != null) {
             await showErrorDialog(
               context,
-              context.loc.forgot_password_view_generic_error,
+              "We could not process your request. Please make sure that you are a registered user, or if not, register a user now by going back one step",
             );
           }
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(context.loc.forgot_password),
+          title: Text("Esqueci minha senha"),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -55,7 +54,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             child: Column(
               children: [
                 Text(
-                  context.loc.forgot_password_view_prompt,
+                  "Se você esqueceu sua senha, não se preocupe! Digite seu e-mail abaixo e enviaremos um link para redefinição de senha.",
                 ),
                 TextField(
                   keyboardType: TextInputType.emailAddress,
@@ -63,7 +62,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   autofocus: true,
                   controller: _controller,
                   decoration: InputDecoration(
-                    hintText: context.loc.email_text_field_placeholder,
+                    hintText: "Digite seu e-mail aqui",
                   ),
                 ),
                 TextButton(
@@ -74,7 +73,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                         .add(AuthEventForgotPassword(email: email));
                   },
                   child: Text(
-                    context.loc.forgot_password_view_send_me_link,
+                    "Me mande um link para redefinir minha senha",
                   ),
                 ),
                 TextButton(
@@ -84,7 +83,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                         );
                   },
                   child: Text(
-                    context.loc.forgot_password_view_back_to_login,
+                    "Voltar para a página de login",
                   ),
                 ),
               ],

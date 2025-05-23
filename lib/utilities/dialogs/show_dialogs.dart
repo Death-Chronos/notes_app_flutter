@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app/extensions/buildcontext/loc.dart';
 import 'package:notes_app/services/cloud/cloud_note.dart';
 
 //um map para as opções de botão, titulo e valor. por exemplo : 'deletar', true - 'cancelar', false
@@ -77,10 +76,10 @@ Future<void> showCannotShareEmptyNoteDialog(BuildContext context) {
 Future<void> showPasswordResetSentDialog(BuildContext context) {
   return showGenericDialog<void>(
     context: context,
-    title: context.loc.password_reset,
-    content: context.loc.password_reset_dialog_prompt,
+    title: "Redefinição de Senhal",
+    content: "Email de redefinição de senha enviada, cheque sua caixa de entrada",
     optionsBuilder: () => {
-      context.loc.ok: null,
+      "OK": null,
     },
   );
 }
