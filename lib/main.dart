@@ -39,9 +39,12 @@ class HomePage extends StatelessWidget {
     context.read<AuthBloc>().add(const AuthEventInitialize());
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        if(state.isLoading) {
-          LoadingScreen().show(context: context, text: state.loadingText?? "Por favor, aguarde...");
-        }else{
+        if (state.isLoading) {
+          LoadingScreen().show(
+            context: context,
+            text: state.loadingText ?? "Por favor, aguarde...",
+          );
+        } else {
           LoadingScreen().hide();
         }
       },
@@ -58,8 +61,6 @@ class HomePage extends StatelessWidget {
           case AuthStateForgotPassword _:
             return const ForgotPasswordView();
           default:
-          
-
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             );

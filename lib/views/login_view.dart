@@ -92,7 +92,7 @@ class LoginViewState extends State<LoginView> {
                         context.read<AuthBloc>().add(AuthEventLogIn(email, password));
                       },
                       style: TextButton.styleFrom(
-                        backgroundColor: Colors.purple[600],
+                        backgroundColor: Colors.blue[600],
                       ),
                       child: const Text(
                         "Login",
